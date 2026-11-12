@@ -136,3 +136,11 @@ test('redgifs preview carries the redgifs id (resolved to the file with sound by
   assert.equal(m.redgifs, 'happygooddog');
   assert.equal(redgifsId('https://i.redd.it/abc.jpg'), null);
 });
+
+test('redditPermalink keeps only site-relative paths', async () => {
+  const { redditPermalink } = await import('./media.js');
+  assert.equal(redditPermalink('/r/x/comments/abc/t/'), 'https://www.reddit.com/r/x/comments/abc/t/');
+  for (const bad of ['//evil.example/x', '/\evil.example', '@evil.example/x', 'https://evil.example/', undefined, 5]) {
+    assert.equal(new URL(redditPermalink(bad)).origin, 'https://www.reddit.com');
+  }
+});

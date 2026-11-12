@@ -709,11 +709,15 @@ const launcher = `  function fetchJson(url) {
       embed: rg ? 'https://www.' + rg[0] : '',
     };
   }
+  // Only ever fetch www.reddit.com: hrefs/srcs come from page HTML ("//other.host", "https://other.host/comments/").
+  function redditUrl(h) {
+    try { var u = new URL(h, 'https://www.reddit.com'); return u.origin === 'https://www.reddit.com' ? u.toString() : null; } catch (e) { return null; }
+  }
   function nextPartial(doc) {
     var els = doc.querySelectorAll('faceplate-partial[src], [src*="after="], [src*="cursor="]');
     for (var k = 0; k < els.length; k++) {
       var s = els[k].getAttribute('src') || '';
-      if (/more-posts|\\/search\\//.test(s) && /[?&](after|cursor)=/.test(s)) return new URL(s, 'https://www.reddit.com').toString();
+      if (/more-posts|\\/search\\//.test(s) && /[?&](after|cursor)=/.test(s)) return redditUrl(s);
     }
     return null;
   }
@@ -725,11 +729,11 @@ const launcher = `  function fetchJson(url) {
     if (!posts.length && /\\/search\\//.test(url)) {
       var seen = {}, links = [];
       Array.prototype.forEach.call(doc.querySelectorAll('a[href*="/comments/"]'), function (el) {
-        var h = (el.getAttribute('href') || '').split('?')[0];
+        var h = redditUrl((el.getAttribute('href') || '').split('?')[0]);
         if (h && !seen[h]) { seen[h] = 1; links.push(h); }
       });
       for (var k = 0; k < links.length; k += 6) {
-        var docs = await Promise.all(links.slice(k, k + 6).map(function (h) { return fetchDoc(new URL(h, 'https://www.reddit.com').toString()).catch(function () { return null; }); }));
+        var docs = await Promise.all(links.slice(k, k + 6).map(function (h) { return fetchDoc(h).catch(function () { return null; }); }));
         docs.forEach(function (d) { var p = d && d.querySelector('shreddit-post'); if (p) posts.push(p); });
       }
     }

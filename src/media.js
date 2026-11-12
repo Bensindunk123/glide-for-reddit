@@ -18,7 +18,7 @@ function base(p) {
   return {
     id: p.name,
     title: p.title ?? '',
-    permalink: `https://www.reddit.com${p.permalink ?? ''}`,
+    permalink: redditPermalink(p.permalink),
     subreddit: p.subreddit_name_prefixed ?? (p.subreddit ? `r/${p.subreddit}` : ''),
     author: p.author ?? '',
     nsfw: !!p.over_18,
@@ -129,12 +129,17 @@ function clearPreview(images) {
   return (images || []).find((u) => u && !/[?&]blur=/.test(u) && !/styles\.redditmedia\.com|redditstatic\.com|\/avatars?\/|snoovatar|communityIcon|emoji/i.test(u)) || null;
 }
 
+// Only a site-relative path ("/r/..."): never "//other.host" or "@other.host" tricks.
+export function redditPermalink(p) {
+  return typeof p === 'string' && /^\/(?![/\\])/.test(p) ? 'https://www.reddit.com' + p : 'https://www.reddit.com/';
+}
+
 export function normalizeShreddit(i) {
   if (!i || !i.id) return null;
   const b = {
     id: i.id,
     title: i.title || '',
-    permalink: `https://www.reddit.com${i.permalink || ''}`,
+    permalink: redditPermalink(i.permalink),
     subreddit: i.subreddit || '',
     author: i.author || '',
     nsfw: !!i.nsfw,
