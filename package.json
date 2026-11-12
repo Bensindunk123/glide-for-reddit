@@ -1,0 +1,13 @@
+{
+  "name": "glide-for-reddit",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Reddit video with sound: autoplay while scrolling + a fullscreen player. Userscript + hosted viewer.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "build": "node build.mjs",
+    "build:css": "npx -y tailwindcss@3.4.17 -c tailwind.config.cjs -i src/tailwind.input.css -o src/tailwind.css --minify"
+  }
+}
