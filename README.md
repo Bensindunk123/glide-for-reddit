@@ -9,6 +9,8 @@ One userscript, desktop browsers (Windows, Mac, Linux). Free, open source (MIT).
 
 ## Install (about a minute, once)
 
+Step-by-step with troubleshooting: **[INSTALL.md](INSTALL.md)**
+
 ### Chrome, Brave, Edge, Opera
 
 1. Install **Tampermonkey** from the [Chrome Web Store](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo).
